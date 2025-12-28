@@ -1,0 +1,12 @@
+[project]
+name = "playnet"
+version = "0.1.0"
+description = "Game genre classfication from ingame screeshot images"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.4.0",
+    "pandas>=2.3.3",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
