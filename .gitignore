@@ -1,3 +1,4 @@
 /dataset_images
 .venv/
 .env
+data/*
