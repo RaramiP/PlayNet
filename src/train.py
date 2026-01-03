@@ -71,7 +71,9 @@ train_transform = transforms.Compose(
         transforms.Resize(256),
         transforms.RandomCrop(224),
         transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.1),
+        transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.2, hue=0.1),
+        transforms.RandomAffine(degrees=10, translate=(0.1, 0.1)),
+        transforms.RandomGrayscale(p=0.1),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ]
@@ -149,6 +151,20 @@ def count_parameters(model):
     trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     total = sum(p.numel() for p in model.parameters())
     return trainable, total
+
+
+def calculate_pos_weights(csv_path, genres):
+    """Calculate positive weights for imbalanced classes."""
+    df = pd.read_csv(csv_path)
+    counts = df[genres].sum()
+    total = len(df)
+
+    # More weight for rare classes
+    pos_weights = (total - counts) / (counts + 1)
+
+    pos_weights = pos_weights.clip(upper=10)
+
+    return torch.tensor(pos_weights.values, dtype=torch.float32)
 
 
 # ============================================================
@@ -253,8 +269,9 @@ def main():
     trainable, total = count_parameters(model)
     print(f"Parameters: {trainable:,} trainable / {total:,} total")
 
-    # Loss with class weighting (optional)
-    criterion = nn.BCEWithLogitsLoss()
+    # Loss with class weighting for imbalanced classes
+    pos_weights = calculate_pos_weights("data/dataset.csv", FINAL_GENRES).to(DEVICE)
+    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weights)
 
     # ========================================
     # PHASE 1: Train only classifier head
