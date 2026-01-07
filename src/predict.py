@@ -23,7 +23,7 @@ FINAL_GENRES = [
 DEVICE = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
 
-def create_model(num_classes):
+def create_model(num_classes, model_name: str = "resnet18"):
     """Create ResNet18 with custom classifier head."""
     model = models.resnet18(weights=None)
     model.fc = nn.Sequential(
@@ -46,12 +46,14 @@ def load_model(checkpoint_path):
 
 def preprocess_image(image_path):
     """Preprocess image for inference."""
-    transform = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ])
+    transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
 
     image = Image.open(image_path).convert("RGB")
     return transform(image).unsqueeze(0)  # Add batch dimension
@@ -66,11 +68,9 @@ def predict(model, image_tensor, threshold=0.5):
 
     results = []
     for genre, prob in zip(FINAL_GENRES, probabilities):
-        results.append({
-            "genre": genre,
-            "probability": float(prob),
-            "predicted": prob >= threshold
-        })
+        results.append(
+            {"genre": genre, "probability": float(prob), "predicted": prob >= threshold}
+        )
 
     # Sort by probability descending
     results.sort(key=lambda x: x["probability"], reverse=True)
@@ -83,13 +83,13 @@ def main():
     parser.add_argument(
         "--model",
         default="best_model_final.pth",
-        help="Path to model checkpoint (default: best_model_final.pth)"
+        help="Path to model checkpoint (default: best_model_final.pth)",
     )
     parser.add_argument(
         "--threshold",
         type=float,
         default=0.5,
-        help="Prediction threshold (default: 0.5)"
+        help="Prediction threshold (default: 0.5)",
     )
     args = parser.parse_args()
 
