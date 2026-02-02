@@ -11,6 +11,8 @@ dependencies = [
     "pandas>=2.3.3",
     "torch>=2.9.1",
     "torchvision>=0.24.1",
+    "fastapi>=0.101.0",
+    "requests>=2.31.0",
 ]
 
 [tool.basedpyright]
