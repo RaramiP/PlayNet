@@ -71,7 +71,6 @@ def preprocess_pil_image(image: Image.Image):
     image = image.convert("RGB")
     return transform(image).unsqueeze(0)  # Add batch dimension
 
-
 @torch.no_grad()
 def predict(model, image_tensor, threshold: float = 0.5, device: torch.device = DEVICE):
     """Run inference and return predictions."""
@@ -82,9 +81,14 @@ def predict(model, image_tensor, threshold: float = 0.5, device: torch.device = 
     results = []
     for genre, prob in zip(FINAL_GENRES, probabilities):
         results.append(
-            {"genre": genre, "probability": float(prob), "predicted": prob >= threshold}
+            {
+                "genre": str(genre),
+                "probability": float(prob),                  # convert numpy float
+                "predicted": bool(prob >= threshold),        # convert numpy bool -> Python bool
+            }
         )
 
     # Sort by probability descending
     results.sort(key=lambda x: x["probability"], reverse=True)
     return results
+

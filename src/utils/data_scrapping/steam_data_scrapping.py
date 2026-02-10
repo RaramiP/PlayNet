@@ -14,7 +14,7 @@ class SteamScraper:
         self.api_key = api_key
         self.base_url = "http://store.steampowered.com/api/appdetails"
         self.app_list_url = "https://api.steampowered.com/IStoreService/GetAppList/v1/"
-        self.data_file = "steam_games_dataset.csv"
+        self.data_file = "data/steam_games_dataset.csv"
 
     def get_all_app_ids(self, start_appid=0):
         """Fetches the list of GAMES only (no DLCs) starting from start_appid."""
