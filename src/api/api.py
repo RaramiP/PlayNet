@@ -14,9 +14,6 @@ from model.predict import load_model, preprocess_image, predict, DEVICE
 app = FastAPI(title="Steam Game Genre ML Pipeline API")
 loaded_model = None
 
-# ------------------------------------------------
-# DATA CLASSES
-# ------------------------------------------------
 class ScrapeRequest(BaseModel):
     api_key: str
     start_appid: int = 0
@@ -38,10 +35,6 @@ class TrainRequest(BaseModel):
     num_epochs_frozen: int = 5
     num_epochs_unfrozen: int = 10
 
-
-# ------------------------------------------------
-# SCRAPING
-# ------------------------------------------------
 @app.post("/scrape")
 def scrape_games(req: ScrapeRequest):
     try:
@@ -51,10 +44,6 @@ def scrape_games(req: ScrapeRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# ------------------------------------------------
-# DOWNLOAD IMAGES
-# ------------------------------------------------
 @app.post("/download_images")
 def download_screens():
     try:
@@ -63,10 +52,6 @@ def download_screens():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# ------------------------------------------------
-# GENERATE DATASET
-# ------------------------------------------------
 @app.post("/generate_dataset")
 def create_dataset(req: DatasetRequest):
     try:
@@ -85,10 +70,6 @@ def create_dataset(req: DatasetRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# ------------------------------------------------
-# TRAIN MODEL
-# ------------------------------------------------
 @app.post("/train")
 def train_model(req: TrainRequest):
     try:
@@ -114,10 +95,6 @@ def train_model(req: TrainRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# ------------------------------------------------
-# LOAD MODEL
-# ------------------------------------------------
 @app.post("/load_model")
 def load_checkpoint(model_path: str):
     global loaded_model
@@ -131,10 +108,6 @@ def load_checkpoint(model_path: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# ------------------------------------------------
-# PREDICT
-# ------------------------------------------------
 DEFAULT_CHECKPOINT = "best_model_final.pth"
 
 @app.post("/predict")

@@ -6,8 +6,8 @@ import ast
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm 
 
-INPUT_CSV = "steam_games_dataset.csv"  
-OUTPUT_DIR = "dataset_images"          
+INPUT_CSV = "data/steam_games_dataset.csv"  
+OUTPUT_DIR = "data/dataset_images"          
 MAX_WORKERS = 10                       
 
 def download_image(url, save_path):

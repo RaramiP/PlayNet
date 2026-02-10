@@ -15,21 +15,19 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("Steam Game Genre – ML Pipeline")
+st.title("Steam Game Genre - ML Pipeline")
 
-# =========================
 # SIDEBAR – PIPELINE
-# =========================
 st.sidebar.header("Pipeline automatisé")
 
 # -------- SCRAPING --------
-st.sidebar.subheader("Scraping Steam")
+st.sidebar.subheader("1. Scraping Steam")
 
 api_key = st.sidebar.text_input("Steam API Key", type="password", value=API_KEY)
 start_appid = st.sidebar.number_input("Start AppID", min_value=0, value=0)
 limit = st.sidebar.number_input("Limit", min_value=1, value=100)
 
-if st.sidebar.button("🚀 Lancer le scraping"):
+if st.sidebar.button("Lancer le scraping"):
     with st.spinner("Scraping en cours..."):
         res = requests.post(
             f"{API_URL}/scrape",
@@ -42,7 +40,7 @@ if st.sidebar.button("🚀 Lancer le scraping"):
     st.sidebar.success(res.json())
 
 # -------- DOWNLOAD IMAGES --------
-st.sidebar.subheader("2️⃣ Télécharger les images")
+st.sidebar.subheader("2. Télécharger les images")
 
 if st.sidebar.button("Télécharger les images"):
     with st.spinner("Téléchargement des images..."):
@@ -50,7 +48,7 @@ if st.sidebar.button("Télécharger les images"):
     st.sidebar.success(res.json())
 
 # -------- DATASET --------
-st.sidebar.subheader("Générer le dataset")
+st.sidebar.subheader("3. Générer le dataset")
 
 steam_csv = st.sidebar.text_input("Steam CSV", "data/steam_games_dataset.csv")
 img_dir = st.sidebar.text_input("Image directory", "data/dataset_images")
@@ -69,7 +67,7 @@ if st.sidebar.button("Générer dataset"):
     st.sidebar.success(res.json())
 
 # -------- TRAINING --------
-st.sidebar.subheader("4️⃣ Entraîner le modèle")
+st.sidebar.subheader("4. Entraîner le modèle")
 
 batch_size = st.sidebar.number_input("Batch size", value=32)
 epochs_frozen = st.sidebar.number_input("Epochs (frozen)", value=5)
@@ -91,22 +89,18 @@ if st.sidebar.button("Lancer l'entraînement"):
     st.sidebar.json(res.json())
 
 # -------- LOAD MODEL --------
-st.sidebar.subheader("5️⃣ Charger un modèle")
+st.sidebar.subheader("5. Charger un modèle")
 
-model_path = st.sidebar.text_input("Checkpoint path", "best_model_final.pth")
-
-if st.sidebar.button("📥 Charger le modèle"):
+if st.sidebar.button("Charger le modèle"):
     with st.spinner("Chargement du modèle..."):
         res = requests.post(
             f"{API_URL}/load_model",
-            params={"model_path": model_path},
+            params={"model_path": "best_model_final.pth"},
         )
     st.sidebar.success(res.json())
 
 
-# =========================
-# MAIN – PREDICTION
-# =========================
+# MAIN
 st.header("Prédiction sur une image")
 
 uploaded_file = st.file_uploader(
@@ -119,7 +113,8 @@ checkpoint_default = "best_model_final.pth"
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
-    st.image(image, caption="Image envoyée", use_container_width=True)
+    st.image(image, caption="Image envoyée", width=min(image.width, 400))
+
 
     if st.button("Prédire le genre"):
         with st.spinner("Prédiction en cours..."):
