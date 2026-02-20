@@ -276,9 +276,7 @@ def main():
     # ========================================
     # PHASE 1: Train only classifier head
     # ========================================
-    print("\n" + "=" * 50)
     print("PHASE 1: Training classifier head (backbone frozen)")
-    print("=" * 50)
 
     optimizer = optim.Adam(model.fc.parameters(), lr=1e-3)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=2, factor=0.5)
@@ -304,9 +302,7 @@ def main():
     # ========================================
     # PHASE 2: Unfreeze and fine-tune
     # ========================================
-    print("\n" + "=" * 50)
     print("PHASE 2: Fine-tuning (unfreezing layer3 and layer4)")
-    print("=" * 50)
 
     # Load best model from phase 1
     model.load_state_dict(torch.load("best_model_phase1.pth"))
@@ -347,9 +343,7 @@ def main():
     # ========================================
     # Final evaluation
     # ========================================
-    print("\n" + "=" * 50)
     print("FINAL EVALUATION")
-    print("=" * 50)
 
     model.load_state_dict(torch.load("best_model_final.pth"))
     val_metrics = validate(model, val_loader, criterion)

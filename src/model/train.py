@@ -193,7 +193,9 @@ def train_epoch(model, loader, criterion, optimizer, device: torch.device = DEVI
 
 
 @torch.no_grad()
-def validate(model, loader, criterion, threshold: float = 0.5, device: torch.device = DEVICE):
+def validate(
+    model, loader, criterion, threshold: float = 0.5, device: torch.device = DEVICE
+):
     model.eval()
     running_loss = 0.0
     all_preds = []
@@ -313,9 +315,7 @@ def run_training(
     # PHASE 1: Train only classifier head
     # ========================================
     if verbose:
-        print("\n" + "=" * 50)
         print("PHASE 1: Training classifier head (backbone frozen)")
-        print("=" * 50)
 
     optimizer = optim.Adam(model.fc.parameters(), lr=1e-3)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=2, factor=0.5)
@@ -343,9 +343,7 @@ def run_training(
     # PHASE 2: Unfreeze and fine-tune
     # ========================================
     if verbose:
-        print("\n" + "=" * 50)
         print("PHASE 2: Fine-tuning (unfreezing layer3 and layer4)")
-        print("=" * 50)
 
     # Load best model from phase 1
     model.load_state_dict(torch.load(phase1_path))
@@ -390,9 +388,7 @@ def run_training(
     # Final evaluation
     # ========================================
     if verbose:
-        print("\n" + "=" * 50)
         print("FINAL EVALUATION")
-        print("=" * 50)
 
     model.load_state_dict(torch.load(final_path))
     val_metrics = validate(model, val_loader, criterion, device=device)
